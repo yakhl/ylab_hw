@@ -216,7 +216,9 @@ def create_dish(
             status_code=400,
             detail="Dish with this title already created in this submenu",
         )
-    return crud.post_dish(db=db, submenu_id=submenu_id, dish=dish)
+    posted_dish = crud.post_dish(db=db, submenu_id=submenu_id, dish=dish)
+    posted_dish.price = round(posted_dish.price, 2)
+    return posted_dish
 
 
 @router.patch(
