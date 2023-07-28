@@ -1,12 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 
-from core.router import router
-from core.db import engine
-import core.models
+from .router import router
+from .db import engine
+from . import models
 
 
-core.models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
