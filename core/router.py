@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from uuid import UUID
 
-import schemas
-import crud
-from db import get_db
+from . import schemas
+from . import crud
+from .db import get_db
 
 
 menu_404_msg = "menu not found"

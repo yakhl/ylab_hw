@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey, String, DECIMAL, UUID
 from sqlalchemy.orm import relationship
 from uuid import uuid4
 
-from db import Base
+from .db import Base
 
 
 class Menu(Base):

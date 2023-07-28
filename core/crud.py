@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 from uuid import UUID
 
-import models
-import schemas
+from . import models
+from . import schemas
 
 
 def get_menus(db: Session, skip: int = 0, limit: int = 100):

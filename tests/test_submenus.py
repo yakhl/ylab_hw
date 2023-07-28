@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from main import app
-from conftest import MenuValueStorage, SubmenuValueStorage
+from .conftest import MenuValueStorage, SubmenuValueStorage
 
 
 client = TestClient(app)
