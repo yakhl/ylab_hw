@@ -5,3 +5,4 @@ alembic==1.11.1
 psycopg2==2.9.6
 httpx==0.24.1
 pytest==7.4.0
+python-dotenv==1.0.0
