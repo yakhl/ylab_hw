@@ -1,10 +1,4 @@
-from fastapi.testclient import TestClient
-
-from core.main import app
-from .conftest import MenuValueStorage, SubmenuValueStorage, DishValueStorage
-
-
-client = TestClient(app)
+from .conftest import MenuValueStorage, SubmenuValueStorage, DishValueStorage, client
 
 
 def test_create_menu():

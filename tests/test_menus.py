@@ -1,10 +1,4 @@
-from fastapi.testclient import TestClient
-
-from core.main import app
-from .conftest import MenuValueStorage
-
-
-client = TestClient(app)
+from .conftest import MenuValueStorage, client
 
 
 def test_read_menus_in_empty_db():

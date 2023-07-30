@@ -5,7 +5,7 @@ services:
     container_name: fastapi_ylab
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./core/Dockerfile
     environment:
       - POSTGRES_DB=${POSTGRES_DB:?err}
       - POSTGRES_USER=${POSTGRES_USER:?err}
@@ -22,6 +22,12 @@ services:
     depends_on:
       postgres_ylab:
         condition: service_healthy
+    healthcheck:
+      test: curl localhost:80/api/v1/menus
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
 
   postgres_ylab:
     container_name: postgres_ylab
@@ -43,6 +49,20 @@ services:
       timeout: 30s
       retries: 5
       start_period: 80s
+
+  tests_ylab:
+    container_name: tests_ylab
+    build:
+      context: .
+      dockerfile: ./tests/Dockerfile
+    environment:
+      - FASTAPI_HOST=fastapi_ylab
+    entrypoint: sh -c "pytest"
+    networks:
+      - ylab_network
+    depends_on:
+      fastapi_ylab:
+        condition: service_healthy
 
 networks:
   ylab_network:
