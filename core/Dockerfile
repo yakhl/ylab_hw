@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /code
 
-RUN apt-get update && apt-get -y install libpq-dev gcc curl
+RUN apt-get update && apt-get -y install curl
 
 COPY ./requirements.txt ./requirements.txt
 
