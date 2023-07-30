@@ -1,54 +1,73 @@
 # Меню ресторана
 Меню ресторана на `FastAPI` с использованием `PostgreSQL` в качестве БД
 
-## Зависимости
-`Python3.10+` должен быть уже установлен. Затем используйте `pip` для установки зависимостей:
+## Запуск через `Docker`
+[Docker](https://www.docker.com/) должен быть установлен
 
-```bash
-pip install -r requirements.txt
-```
+### Переменные окружения
+Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` в корне проекта и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`
 
-## Переменные окружения
-Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` рядом с `main.py` и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`
+Для запуска проекта **обазательно нужно указать** следущие переменные:
+- **POSTGRES_DB** - название БД
+- **POSTGRES_USER** - имя пользователя БД 
+- **POSTGRES_PASSWORD** - пароль БД
 
-Для запуска проекта **нужно указать** следущие переменные:
-- **DB_USER** - имя пользователя
-- **DB_PASS** - пароль 
-- **DB_HOST** - хост БД
-- **DB_PORT** - порт БД
-- **DB_NAME** - имя БД
+Опциональные переменные:
+- **LOCAL_POSTGRES_PORT** - порт для БД на вашей машине(по-умолчанию: 5432)
+- **LOCAL_FASTAPI_PORT** - порт для API на вашей машине(по-умолчанию: 80)
 
-Например, если вы распечатаете содержимое `.env`, то увидите:
+Внутри контейнеров установлены следующие порты:
+- **5432** - для БД
+- **80** - для API
+
+Файл `.env` может выглядить примерно так:
 
 ```bash
 $ cat .env
-DB_USER=postgres
-DB_PASS=postgres
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=db
+POSTGRES_DB=postgres_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=1234
+LOCAL_POSTGRES_PORT=6789
+LOCAL_FASTAPI_PORT=8080
 ```
 
-## Как запустить
-Сначала примените миграции:
+### Запуск
+Запустите `Docker` и введите команду, находясь в корне проекта:
 ```bash
-$ alembic upgrade head
-```
-Вы увидите:
-```
-INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
-INFO  [alembic.runtime.migration] Will assume transactional DDL.
-INFO  [alembic.runtime.migration] Running upgrade  -> ce4c71971744, Initial
+$ docker-compose up -d
 ```
 
-Запуск:
-```bash
-$ uvicorn main:app
-```
 Вы увидите:
-```ы
-INFO:     Started server process [...]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000
+```bash
+[+] Running 3/3
+ ✔ Container postgres_ylab  Healthy
+ ✔ Container fastapi_ylab   Healthy
+ ✔ Container tests_ylab     Started
 ```
+
+Чтобы посмотреть логи тестов после их завершения выполните команду:
+```bash
+$ docker logs tests_ylab
+```
+
+Вы увидите:
+```bash
+==================== test session starts ====================
+platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
+rootdir: /code
+plugins: anyio-3.7.1
+collected 36 items
+
+tests/test_dishes.py ............... [ 41%]
+tests/test_menus.py .........        [ 66%]
+tests/test_submenus.py ............  [100%]
+
+==================== 36 passed in 1.78s ====================
+```
+
+Запустить контейнер с тестами можно повторно:
+```bash
+$ docker start -a tests_ylab
+```
+
+Но сначала запустите контейнеры с БД и API.
