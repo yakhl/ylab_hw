@@ -62,11 +62,10 @@ rootdir: /code
 plugins: anyio-3.7.1
 collected 36 items
 
-tests/test_dishes.py ............... [ 41%]
-tests/test_menus.py .........        [ 66%]
-tests/test_submenus.py ............  [100%]
-
-==================== 36 passed in 1.78s ====================
+tests/test_dishes.py ...............                   [ 41%]
+tests/test_menus.py .........                          [ 66%]
+tests/test_submenus.py ............                    [100%]
+==================== 36 passed in 1.78s =====================
 ```
 
 Запустить контейнер с тестами можно повторно:
@@ -157,5 +156,5 @@ collected 36 items
 tests\test_dishes.py ............... [ 41%] 
 tests\test_menus.py .........        [ 66%] 
 tests\test_submenus.py ............  [100%] 
-=========== 36 passed in 1.78s ===========
+=========== 36 passed in 1.78s ============
 ```
