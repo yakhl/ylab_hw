@@ -7,7 +7,7 @@
 ### Переменные окружения
 Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` в корне проекта и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`
 
-Для запуска проекта **обазательно нужно указать** следущие переменные:
+Для запуска проекта **обязательно нужно указать** следующие переменные:
 - **POSTGRES_DB** - название БД
 - **POSTGRES_USER** - имя пользователя БД 
 - **POSTGRES_PASSWORD** - пароль БД
@@ -20,7 +20,7 @@
 - **5432** - для БД
 - **80** - для API
 
-Файл `.env` может выглядить примерно так:
+Файл `.env` может выглядеть примерно так:
 
 ```bash
 $ cat .env
@@ -31,13 +31,15 @@ LOCAL_POSTGRES_PORT=6789
 LOCAL_FASTAPI_PORT=8080
 ```
 
-### Запуск
+### Как запустить
 Запустите `Docker` и введите команду, находясь в корне проекта:
+
 ```bash
 $ docker-compose up -d
 ```
 
 Вы увидите:
+
 ```bash
 [+] Running 3/3
  ✔ Container postgres_ylab  Healthy
@@ -46,11 +48,13 @@ $ docker-compose up -d
 ```
 
 Чтобы посмотреть логи тестов после их завершения выполните команду:
+
 ```bash
 $ docker logs tests_ylab
 ```
 
 Вы увидите:
+
 ```bash
 ==================== test session starts ====================
 platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
@@ -66,8 +70,92 @@ tests/test_submenus.py ............  [100%]
 ```
 
 Запустить контейнер с тестами можно повторно:
+
 ```bash
 $ docker start -a tests_ylab
 ```
+
 Но сначала запустите контейнеры с БД и API.
 Перед запуском тестов убедитесь, что БД пуста.
+
+
+## Запуск `локально`
+Используйте виртуальное окружение и [Python3.10+](https://www.python.org/downloads/)
+
+### Зависимости
+Установите зависимости:
+
+```bash
+pip install -r ./core_requirements.txt -r ./tests_requirements.txt
+```
+
+Основные зависимости: `core_requirements.txt`
+Зависимости для тестирования: `tests_requirements.txt`
+
+### Переменные окружения
+Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` в корне проекта и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`
+
+Для запуска проекта можно указать следующие переменные:
+- **POSTGRES_DB** - название БД(по-умолчанию: postgres_db)
+- **POSTGRES_USER** - имя пользователя БД(по-умолчанию: postgres)
+- **POSTGRES_PASSWORD** - пароль БД(по-умолчанию: 1234)
+- **POSTGRES_HOST** - хост БД(по-умолчанию: localhost)
+- **POSTGRES_PORT** - порт БД(по-умолчанию: 5432)
+- **FASTAPI_HOST** - хост API для тестов(по-умолчанию: localhost)
+- **FASTAPI_PORT** - порт API для тестов(по-умолчанию: 8000)
+
+Файл `.env` может выглядеть примерно так:
+
+```bash
+$ cat .env
+POSTGRES_DB=mydb
+POSTGRES_USER=myusername
+POSTGRES_PASSWORD=4321
+```
+
+### Как запустить
+Примените миграции:
+
+```bash
+$ alembic upgrade head
+```
+
+Вы увидите:
+```
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> ce4c71971744, Initial
+```
+
+Запустите сервер:
+
+```bash
+$ uvicorn core.main:app
+```
+
+Вы увидите:
+```
+INFO:     Started server process [...]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000
+```
+
+Запустите тесты:
+
+```bash
+$ pytest
+```
+
+Вы увидите:
+```
+=========== test session starts ===========
+rootdir: [...]
+plugins: anyio-3.7.1
+collected 36 items
+
+tests\test_dishes.py ............... [ 41%] 
+tests\test_menus.py .........        [ 66%] 
+tests\test_submenus.py ............  [100%] 
+=========== 36 passed in 1.78s ===========
+```

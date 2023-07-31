@@ -3,6 +3,4 @@ fastapi==0.100.0
 uvicorn==0.23.1
 alembic==1.11.1
 psycopg2-binary==2.9.6
-httpx==0.24.1
-pytest==7.4.0
 python-dotenv==1.0.0

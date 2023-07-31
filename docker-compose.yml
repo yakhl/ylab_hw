@@ -1,6 +1,27 @@
 version: "3.8"
 
 services:
+  postgres_ylab:
+    container_name: postgres_ylab
+    image: postgres:15.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:?err}
+      - POSTGRES_USER=${POSTGRES_USER:?err}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?err}
+      - PGUSER=postgres
+    ports:
+      - "${LOCAL_POSTGRES_PORT:-5432}:5432"
+    networks:
+      - ylab_network
+    healthcheck:
+      test: sh -c "pg_isready -U ${POSTGRES_USER:?err} -d ${POSTGRES_DB:?err}"
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
+
   fastapi_ylab:
     container_name: fastapi_ylab
     build:
@@ -29,27 +50,6 @@ services:
       retries: 5
       start_period: 80s
 
-  postgres_ylab:
-    container_name: postgres_ylab
-    image: postgres:15.1-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB:?err}
-      - POSTGRES_USER=${POSTGRES_USER:?err}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?err}
-      - PGUSER=postgres
-    ports:
-      - "${LOCAL_POSTGRES_PORT:-5432}:5432"
-    networks:
-      - ylab_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER:?err}", "-d", "${POSTGRES_DB:?err}"]
-      interval: 10s
-      timeout: 30s
-      retries: 5
-      start_period: 80s
-
   tests_ylab:
     container_name: tests_ylab
     build:
@@ -57,6 +57,7 @@ services:
       dockerfile: ./tests/Dockerfile
     environment:
       - FASTAPI_HOST=fastapi_ylab
+      - FASTAPI_PORT=80
     entrypoint: sh -c "pytest"
     networks:
       - ylab_network

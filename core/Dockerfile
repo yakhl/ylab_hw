@@ -4,9 +4,9 @@ WORKDIR /code
 
 RUN apt-get update && apt-get -y install curl
 
-COPY ./requirements.txt ./requirements.txt
+COPY ./core_requirements.txt ./core_requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
+RUN pip install --no-cache-dir --upgrade -r ./core_requirements.txt
 
 COPY ./core ./core
 
