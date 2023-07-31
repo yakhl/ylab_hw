@@ -44,7 +44,7 @@ services:
       postgres_ylab:
         condition: service_healthy
     healthcheck:
-      test: curl localhost:80/api/v1/menus
+      test: curl localhost:80/api/v1/menus || exit 1
       interval: 10s
       timeout: 30s
       retries: 5
