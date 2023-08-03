@@ -1,5 +1,4 @@
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, validator
 from uuid import UUID
 from decimal import Decimal
 
@@ -19,7 +18,7 @@ class MenuOut(MenuBase):
     dishes_count: int = 0
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SubmenuBase(BaseModel):
@@ -37,7 +36,7 @@ class SubmenuOut(SubmenuBase):
     dishes_count: int = 0
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DishBase(BaseModel):
@@ -54,5 +53,9 @@ class DishOut(DishBase):
     submenu_id: UUID
     id: UUID
 
+    @validator("price")
+    def round_price(cls, value):
+        return Decimal(value).quantize(Decimal(".01"))
+
     class Config:
-        orm_mode = True
+        from_attributes = True
