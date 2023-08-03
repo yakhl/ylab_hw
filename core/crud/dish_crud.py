@@ -1,18 +1,12 @@
-from sqlalchemy.orm import Session
 from uuid import UUID
 
-from .. import models
-from .. import schemas
+from sqlalchemy.orm import Session
+
+from .. import models, schemas
 
 
 def get_dishes(db: Session, submenu_id: UUID, skip: int = 0, limit: int = 100):
-    return (
-        db.query(models.Dish)
-        .filter(models.Dish.submenu_id == submenu_id)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return db.query(models.Dish).filter(models.Dish.submenu_id == submenu_id).offset(skip).limit(limit).all()
 
 
 def get_dish(db: Session, menu_id: UUID, submenu_id: UUID, dish_id: UUID):

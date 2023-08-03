@@ -1,17 +1,18 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
 from .. import schemas
-from ..crud import submenu_crud, dish_crud
+from ..crud import dish_crud, submenu_crud
 from ..db import get_db
-from .error_messages import submenu_404_msg, dish_404_msg
+from .error_messages import dish_404_msg, submenu_404_msg
 
 router = APIRouter()
 
 
 @router.get(
-    "/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes",
+    '/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes',
     response_model=list[schemas.DishOut],
 )
 def read_dishes(
@@ -29,7 +30,7 @@ def read_dishes(
 
 
 @router.get(
-    "/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=schemas.DishOut,
 )
 def read_dish(menu_id: UUID, submenu_id: UUID, dish_id: UUID, db: Session = Depends(get_db)):
@@ -40,7 +41,7 @@ def read_dish(menu_id: UUID, submenu_id: UUID, dish_id: UUID, db: Session = Depe
 
 
 @router.post(
-    "/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes",
+    '/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes',
     response_model=schemas.DishOut,
     status_code=201,
 )
@@ -54,13 +55,13 @@ def create_dish(
     if db_dish:
         raise HTTPException(
             status_code=409,
-            detail="Another dish with this title already exists in the submenu.",
+            detail='Another dish with this title already exists in the submenu.',
         )
     return dish_crud.post_dish(db=db, submenu_id=submenu_id, dish=dish)
 
 
 @router.patch(
-    "/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=schemas.DishOut,
 )
 def update_dish(
@@ -79,13 +80,13 @@ def update_dish(
     if dish_by_title and dish_by_title.id != dish_id:
         raise HTTPException(
             status_code=409,
-            detail="Another dish with this title already exists in the submenu.",
+            detail='Another dish with this title already exists in the submenu.',
         )
     return dish_crud.change_dish(db=db, dish=db_dish, new_dish=new_dish)
 
 
 @router.delete(
-    "/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=dict,
 )
 def delete_dish(menu_id: UUID, submenu_id: UUID, dish_id: UUID, db: Session = Depends(get_db)):
@@ -93,4 +94,4 @@ def delete_dish(menu_id: UUID, submenu_id: UUID, dish_id: UUID, db: Session = De
     if db_dish is None:
         raise HTTPException(status_code=404, detail=dish_404_msg)
     dish_crud.remove_dish(db=db, dish=db_dish)
-    return {"status": True, "message": "The dish has been deleted"}
+    return {'status': True, 'message': 'The dish has been deleted'}

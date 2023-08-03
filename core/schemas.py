@@ -1,6 +1,7 @@
-from pydantic import BaseModel, validator
-from uuid import UUID
 from decimal import Decimal
+from uuid import UUID
+
+from pydantic import BaseModel, validator
 
 
 class MenuBase(BaseModel):
@@ -53,9 +54,9 @@ class DishOut(DishBase):
     submenu_id: UUID
     id: UUID
 
-    @validator("price")
+    @validator('price')
     def round_price(cls, value):
-        return Decimal(value).quantize(Decimal(".01"))
+        return Decimal(value).quantize(Decimal('.01'))
 
     class Config:
         from_attributes = True

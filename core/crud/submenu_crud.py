@@ -1,19 +1,13 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import func
 from uuid import UUID
 
-from .. import models
-from .. import schemas
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from .. import models, schemas
 
 
 def get_submenus(db: Session, menu_id: UUID, skip: int = 0, limit: int = 100):
-    return (
-        db.query(models.Submenu)
-        .filter(models.Submenu.menu_id == menu_id)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+    return db.query(models.Submenu).filter(models.Submenu.menu_id == menu_id).offset(skip).limit(limit).all()
 
 
 def get_submenu(db: Session, menu_id: UUID, submenu_id: UUID):
@@ -57,6 +51,4 @@ def remove_submenu(db: Session, submenu: schemas.SubmenuOut):
 
 
 def count_dishes_in_submenu(db: Session, submenu_id: UUID):
-    return (
-        db.query(func.count(models.Dish.id)).filter(models.Dish.submenu_id == submenu_id).scalar()
-    )
+    return db.query(func.count(models.Dish.id)).filter(models.Dish.submenu_id == submenu_id).scalar()

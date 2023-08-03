@@ -9,7 +9,7 @@
 
 Для запуска проекта **обязательно нужно указать** следующие переменные:
 - **POSTGRES_DB** - название БД
-- **POSTGRES_USER** - имя пользователя БД 
+- **POSTGRES_USER** - имя пользователя БД
 - **POSTGRES_PASSWORD** - пароль БД
 
 Опциональные переменные:
@@ -153,8 +153,8 @@ rootdir: [...]
 plugins: anyio-3.7.1
 collected 36 items
 
-tests\test_dishes.py ............... [ 41%] 
-tests\test_menus.py .........        [ 66%] 
-tests\test_submenus.py ............  [100%] 
+tests\test_dishes.py ............... [ 41%]
+tests\test_menus.py .........        [ 66%]
+tests\test_submenus.py ............  [100%]
 =========== 36 passed in 1.78s ============
 ```
