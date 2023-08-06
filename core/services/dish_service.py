@@ -1,27 +1,54 @@
+import json
 from uuid import UUID
 
 from fastapi import Depends
 
-from ..models.models import Dish
+from ..repositories.cache_repository import CacheRepository
+from ..repositories.cache_tags import all_dishes_tag
 from ..repositories.dish_repository import DishRepository
+from ..repositories.error_messages import dish_200_deleted_msg
 from ..schemas.dish_schemas import DishInSchema
 
 
 class DishService:
-    def __init__(self, repository: DishRepository = Depends()):
+    def __init__(self, cache_repository: CacheRepository = Depends(), repository: DishRepository = Depends()):
         self.repository = repository
+        self.cache_repository = cache_repository
 
-    def get_all(self, menu_id: UUID, submenu_id: UUID) -> list[Dish]:
-        return self.repository.get_all(menu_id=menu_id, submenu_id=submenu_id)
+    def _get_all_dishes_id(self, menu_id: UUID | str, submenu_id: UUID | str, all_dishes_tag: str) -> str:
+        return f'{menu_id}:{submenu_id}:{all_dishes_tag}'
 
-    def get(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID) -> Dish:
-        return self.repository.get(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+    def get_all(self, menu_id: UUID, submenu_id: UUID) -> list[dict]:
+        all_dishes_id = self._get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
+        cached_dishes = self.cache_repository.get(all_dishes_id)
+        if cached_dishes is not None:
+            return json.loads(cached_dishes)
+        db_dishes = self.repository.get_all(menu_id=menu_id, submenu_id=submenu_id)
+        self.cache_repository.set(all_dishes_id, db_dishes)
+        return db_dishes
 
-    def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishInSchema) -> Dish:
-        return self.repository.create(menu_id=menu_id, submenu_id=submenu_id, dish_data=dish_data)
+    def get(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID) -> dict:
+        cached_dish = self.cache_repository.get(dish_id)
+        if cached_dish is not None:
+            return json.loads(cached_dish)
+        db_dish = self.repository.get(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+        self.cache_repository.set(db_dish['id'], db_dish)
+        return db_dish
 
-    def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishInSchema) -> Dish:
-        return self.repository.update(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, dish_data=dish_data)
+    def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishInSchema) -> dict:
+        db_dish = self.repository.create(menu_id=menu_id, submenu_id=submenu_id, dish_data=dish_data)
+        self.cache_repository.flush()
+        self.cache_repository.set(db_dish['id'], db_dish)
+        return db_dish
+
+    def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishInSchema) -> dict:
+        all_dishes_id = self._get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
+        db_dish = self.repository.update(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, dish_data=dish_data)
+        self.cache_repository.delete(all_dishes_id)
+        self.cache_repository.set(db_dish['id'], db_dish)
+        return db_dish
 
     def delete(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID) -> dict:
-        return self.repository.delete(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+        self.repository.delete(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+        self.cache_repository.flush()
+        return {'status': True, 'message': dish_200_deleted_msg}

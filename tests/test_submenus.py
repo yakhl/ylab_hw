@@ -93,6 +93,21 @@ def test_update_submenu():
     }
 
 
+def test_read_submenus_after_update():
+    response = client.get(f'/api/v1/menus/{MenuValueStorage.id}/submenus')
+    assert response.status_code == 200, response.text
+    data_out = response.json()
+    assert isinstance(data_out, list) and len(data_out) == 1
+    submenu = data_out[0]
+    assert submenu == {
+        'id': SubmenuValueStorage.id,
+        'title': SubmenuValueStorage.title,
+        'description': SubmenuValueStorage.description,
+        'menu_id': MenuValueStorage.id,
+        'dishes_count': 0,
+    }
+
+
 def test_read_submenu_after_update():
     response = client.get(f'/api/v1/menus/{MenuValueStorage.id}/submenus/{SubmenuValueStorage.id}')
     assert response.status_code == 200, response.text

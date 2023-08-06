@@ -22,6 +22,22 @@ services:
       retries: 5
       start_period: 80s
 
+  redis_ylab:
+    container_name: redis_ylab
+    image: redis:7.0-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${LOCAL_REDIS_PORT:-6379}:6379"
+    networks:
+      - ylab_network
+    healthcheck:
+      test: sh -c "redis-cli ping"
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
+
   fastapi_ylab:
     container_name: fastapi_ylab
     build:
@@ -33,6 +49,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?err}
       - POSTGRES_HOST=postgres_ylab
       - POSTGRES_PORT=5432
+      - REDIS_HOST=redis_ylab
+      - REDIS_PORT=6379
     entrypoint: sh -c "alembic upgrade head && uvicorn core.main:app --host 0.0.0.0 --port 80"
     volumes:
       - shared-volume:/core/generated_files
@@ -42,6 +60,8 @@ services:
       - ylab_network
     depends_on:
       postgres_ylab:
+        condition: service_healthy
+      redis_ylab:
         condition: service_healthy
     healthcheck:
       test: curl localhost:80/api/v1/menus || exit 1
@@ -72,3 +92,4 @@ networks:
 volumes:
   postgres_data:
   shared-volume:
+  redis_data:

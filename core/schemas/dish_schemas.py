@@ -19,7 +19,7 @@ class DishOutSchema(DishBaseSchema):
     id: UUID
 
     @validator('price')
-    def round_price(cls, value):
+    def round_price(cls, value) -> Decimal:
         return Decimal(value).quantize(Decimal('.01'))
 
     class Config:
