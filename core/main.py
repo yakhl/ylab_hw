@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from .db import engine
+from .database.db import engine
 from .models import models
 from .routers import dish_router, menu_router, submenu_router
 

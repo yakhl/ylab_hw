@@ -24,7 +24,9 @@ def create_submenu(menu_id: UUID, submenu_data: SubmenuInSchema, submenu: Submen
 
 
 @router.patch('/{submenu_id}', response_model=SubmenuOutSchema)
-def update_submenu(menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuInSchema, submenu: SubmenuService = Depends()) -> dict:
+def update_submenu(
+    menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuInSchema, submenu: SubmenuService = Depends()
+) -> dict:
     return submenu.update(menu_id=menu_id, submenu_id=submenu_id, submenu_data=submenu_data)
 
 

@@ -1,6 +1,6 @@
 import redis
 
-from .env_var import REDIS_HOST, REDIS_PORT
+from ..configs.env_var import REDIS_HOST, REDIS_PORT
 
 pool = redis.ConnectionPool(
     host=REDIS_HOST,
