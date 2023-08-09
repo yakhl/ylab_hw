@@ -66,14 +66,15 @@ def test_read_dishes_after_create():
     assert response.status_code == 200, response.text
     data_out = response.json()
     assert isinstance(data_out, list) and len(data_out) == 1
-    dish = data_out[0]
-    assert dish == {
-        'id': DishValueStorage.id,
-        'title': DishValueStorage.title,
-        'description': DishValueStorage.description,
-        'submenu_id': SubmenuValueStorage.id,
-        'price': str(round(DishValueStorage.price, 2)),
-    }
+    assert [
+        {
+            'id': DishValueStorage.id,
+            'title': DishValueStorage.title,
+            'description': DishValueStorage.description,
+            'submenu_id': SubmenuValueStorage.id,
+            'price': str(round(DishValueStorage.price, 2)),
+        }
+    ]
 
 
 def test_read_dish_after_create():
@@ -119,14 +120,15 @@ def test_read_dishes_after_update():
     assert response.status_code == 200, response.text
     data_out = response.json()
     assert isinstance(data_out, list) and len(data_out) == 1
-    dish = data_out[0]
-    assert dish == {
-        'id': DishValueStorage.id,
-        'title': DishValueStorage.title,
-        'description': DishValueStorage.description,
-        'submenu_id': SubmenuValueStorage.id,
-        'price': str(round(DishValueStorage.price, 2)),
-    }
+    assert [
+        {
+            'id': DishValueStorage.id,
+            'title': DishValueStorage.title,
+            'description': DishValueStorage.description,
+            'submenu_id': SubmenuValueStorage.id,
+            'price': str(round(DishValueStorage.price, 2)),
+        }
+    ]
 
 
 def test_read_dish_after_update():
