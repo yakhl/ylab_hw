@@ -8,9 +8,10 @@ from ..configs.error_messages import menu_200_deleted_msg
 from ..repositories.cache_repository import CacheRepository
 from ..repositories.menu_repository import MenuRepository
 from ..schemas.menu_schemas import MenuInSchema
+from .main_service import MainService
 
 
-class MenuService:
+class MenuService(MainService):
     def __init__(self, cache_repository: CacheRepository = Depends(), menu_repository: MenuRepository = Depends()):
         self.menu_repository = menu_repository
         self.cache_repository = cache_repository
@@ -33,17 +34,15 @@ class MenuService:
 
     def create(self, menu_data: MenuInSchema) -> dict:
         db_menu = self.menu_repository.create(menu_data=menu_data)
-        self.cache_repository.delete(all_menus_tag)
-        self.cache_repository.set(db_menu['id'], db_menu)
+        self.cache_repository.create_menu(db_menu)
         return db_menu
 
     def update(self, id: UUID, menu_data: MenuInSchema) -> dict:
         db_menu = self.menu_repository.update(id=id, menu_data=menu_data)
-        self.cache_repository.delete(all_menus_tag)
-        self.cache_repository.set(db_menu['id'], db_menu)
+        self.cache_repository.update_menu(db_menu)
         return db_menu
 
     def delete(self, id: UUID) -> dict:
         self.menu_repository.delete(id=id)
-        self.cache_repository.flush()
+        self.cache_repository.delete_menu(menu_id=id)
         return {'status': True, 'message': menu_200_deleted_msg}
