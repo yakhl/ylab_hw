@@ -43,7 +43,7 @@ class DishRepository:
         db_dish_by_title = self._get_dish(menu_id=menu_id, submenu_id=submenu_id, title=dish_data.title)
         if db_dish_by_title:
             raise HTTPException(status_code=409, detail=dish_409_msg)
-        db_dish = Dish(submenu_id=submenu_id, **dish_data.dict())
+        db_dish = Dish(submenu_id=submenu_id, **dish_data.model_dump())
         self.db.add(db_dish)
         self.db.commit()
         self.db.refresh(db_dish)
@@ -56,7 +56,7 @@ class DishRepository:
         db_dish_by_title = self._get_dish(menu_id=menu_id, submenu_id=submenu_id, title=dish_data.title)
         if db_dish_by_title:
             raise HTTPException(status_code=409, detail=dish_409_msg)
-        for key, value in dish_data.dict().items():
+        for key, value in dish_data.model_dump().items():
             setattr(db_dish, key, value)
         self.db.commit()
         self.db.refresh(db_dish)

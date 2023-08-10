@@ -42,7 +42,7 @@ class MenuRepository:
     def create(self, menu_data: MenuInSchema) -> dict:
         if self._get_menu(title=menu_data.title):
             raise HTTPException(status_code=409, detail=menu_409_msg)
-        db_menu = Menu(**menu_data.dict())
+        db_menu = Menu(**menu_data.model_dump())
         self.db.add(db_menu)
         self.db.commit()
         self.db.refresh(db_menu)
@@ -55,7 +55,7 @@ class MenuRepository:
         db_menu_by_title = self._get_menu(title=menu_data.title)
         if db_menu_by_title and db_menu_by_title.id != id:
             raise HTTPException(status_code=409, detail=menu_409_msg)
-        for key, value in menu_data.dict().items():
+        for key, value in menu_data.model_dump().items():
             setattr(db_menu, key, value)
         self.db.commit()
         self.db.refresh(db_menu)

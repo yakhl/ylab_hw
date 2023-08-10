@@ -42,7 +42,7 @@ class SubmenuRepository:
             raise HTTPException(status_code=404, detail=menu_404_msg)
         if self._get_submenu(menu_id=menu_id, title=submenu_data.title):
             raise HTTPException(status_code=409, detail=submenu_409_msg)
-        db_submenu = Submenu(menu_id=menu_id, **submenu_data.dict())
+        db_submenu = Submenu(menu_id=menu_id, **submenu_data.model_dump())
         self.db.add(db_submenu)
         self.db.commit()
         self.db.refresh(db_submenu)
@@ -55,7 +55,7 @@ class SubmenuRepository:
         db_submenu_by_title = self._get_submenu(menu_id=menu_id, title=submenu_data.title)
         if db_submenu_by_title and db_submenu_by_title.id != submenu_id:
             raise HTTPException(status_code=409, detail=submenu_409_msg)
-        for key, value in submenu_data.dict().items():
+        for key, value in submenu_data.model_dump().items():
             setattr(db_submenu, key, value)
         self.db.commit()
         self.db.refresh(db_submenu)
