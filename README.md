@@ -45,14 +45,29 @@ $ docker-compose up -d
 ```
 [+] Running 3/3
  ✔ Container postgres_ylab  Healthy
- ✔ Container fastapi_ylab   Healthy
- ✔ Container tests_ylab     Started
+ ✔ Container redis_ylab     Healthy
+ ✔ Container fastapi_ylab   Started
 ```
 
-Чтобы посмотреть логи тестов после их завершения выполните команду:
+Для запуска тестов с отдельными БД и Redis используйте:
 
 ```bash
-$ docker logs tests_ylab
+$ docker-compose -f docker-compose.test.yml up -d
+```
+
+Вы увидите:
+
+```
+[+] Running 3/3
+ ✔ Container postgres_test  Healthy
+ ✔ Container redis_test     Healthy
+ ✔ Container fastapi_test   Started
+```
+
+Чтобы посмотреть логи тестов после их завершения введите:
+
+```bash
+$ docker logs fastapi_test
 ```
 
 Вы увидите:
@@ -69,17 +84,6 @@ tests/test_menus.py .........                          [ 66%]
 tests/test_submenus.py ............                    [100%]
 ==================== 39 passed in 1.78s =====================
 ```
-
-Запустить контейнер с тестами можно отдельно:
-
-```bash
-$ docker start -a tests_ylab
-```
-
-Но сначала запустите контейнеры с БД, Redis и API.
-Перед запуском тестов убедитесь, что БД пуста.
-Тесты могут работать без Redis, но медленно
-
 
 ## Запуск `локально`
 Используйте виртуальное окружение и [Python3.10+](https://www.python.org/downloads/)
@@ -105,8 +109,6 @@ pip install -r ./core_requirements.txt -r ./tests_requirements.txt
 - **POSTGRES_PORT** - порт БД (по-умолчанию: 5432)
 - **REDIS_HOST** - хост Redis (по-умолчанию: localhost)
 - **REDIS_PORT** - порт Redis (по-умолчанию: 6379)
-- **FASTAPI_HOST** - хост API для тестов (по-умолчанию: localhost)
-- **FASTAPI_PORT** - порт API для тестов (по-умолчанию: 8000)
 
 Файл `.env` может выглядеть примерно так:
 
