@@ -79,13 +79,15 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 4db770efe029, initial
 ==================== test session starts ====================
 platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
 rootdir: /code
-plugins: anyio-3.7.1
-collected 39 items
+plugins: anyio-3.7.1, asyncio-0.21.1
+asyncio: mode=strict
+collected 46 items
 
-tests/test_dishes.py ...............                   [ 41%]
-tests/test_menus.py .........                          [ 66%]
+tests/test_dishes.py ...............                   [ 34%]
+tests/test_full_menu.py .......                        [ 50%]
+tests/test_menus.py .........                          [ 71%]
 tests/test_submenus.py ............                    [100%]
-==================== 39 passed in 1.78s =====================
+==================== 46 passed in 1.78s =====================
 ```
 
 ## Запуск `локально`
@@ -95,11 +97,8 @@ tests/test_submenus.py ............                    [100%]
 Установите зависимости:
 
 ```bash
-pip install -r ./core_requirements.txt -r ./tests_requirements.txt
+pip install -r requirements.txt
 ```
-
-Основные зависимости: `core_requirements.txt`
-Зависимости для тестирования: `tests_requirements.txt`
 
 ### Переменные окружения
 Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` в корне проекта и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`
@@ -160,11 +159,13 @@ $ pytest -p no:warnings
 ==================== test session starts ====================
 platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
 rootdir: /code
-plugins: anyio-3.7.1
-collected 39 items
+plugins: anyio-3.7.1, asyncio-0.21.1
+asyncio: mode=strict
+collected 46 items
 
-tests/test_dishes.py ...............                   [ 41%]
-tests/test_menus.py .........                          [ 66%]
+tests/test_dishes.py ...............                   [ 34%]
+tests/test_full_menu.py .......                        [ 50%]
+tests/test_menus.py .........                          [ 71%]
 tests/test_submenus.py ............                    [100%]
-==================== 39 passed in 1.78s =====================
+==================== 46 passed in 1.78s =====================
 ```
