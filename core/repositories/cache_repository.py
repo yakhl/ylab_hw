@@ -2,7 +2,7 @@ import json
 from uuid import UUID
 
 import redis
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from fastapi.encoders import jsonable_encoder
 from redis import asyncio as aioredis
 
@@ -20,9 +20,10 @@ from ..services.main_service import MainService
 class CacheRepository:
     _was_redis_disconnect = True
 
-    def __init__(self, redis: aioredis.Redis = Depends(get_redis)):
+    def __init__(self, background_tasks: BackgroundTasks, redis: aioredis.Redis = Depends(get_redis)):
         self.redis = redis
         self.ttl_sec = 3600
+        self.background_tasks = background_tasks
 
     @staticmethod
     def _handle_redis_exceptions(func):
@@ -38,6 +39,12 @@ class CacheRepository:
                 return None
 
         return wrapper
+
+    async def _delete_cache_keys(self, *args) -> None:
+        await self.redis.delete(*args)
+
+    async def _srem_cache_keys(self, name, value) -> None:
+        await self.redis.srem(name, value)
 
     def _serialize_data(self, item_data: dict | list[dict]) -> str:
         json_compatible_item_data = jsonable_encoder(item_data)
@@ -58,13 +65,15 @@ class CacheRepository:
     @_handle_redis_exceptions
     async def create_menu(self, db_menu: Menu) -> None:
         menu_id = str(db_menu.id)
-        await self.redis.delete(all_menus_tag, full_menu_tag)
+        to_delete = [all_menus_tag, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.set(menu_id, self._serialize_data(db_menu), self.ttl_sec)
 
     @_handle_redis_exceptions
     async def update_menu(self, db_menu: Menu) -> None:
         menu_id = str(db_menu.id)
-        await self.redis.delete(all_menus_tag, full_menu_tag)
+        to_delete = [all_menus_tag, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.set(menu_id, self._serialize_data(db_menu), self.ttl_sec)
 
     @_handle_redis_exceptions
@@ -77,13 +86,14 @@ class CacheRepository:
                 to_delete.append(dish_id)
             all_dishes_id = MainService.get_all_dishes_id(menu_id, submenu_id, all_submenus_tag)
             to_delete.extend([all_dishes_id, submenu_id, f'deps:{submenu_id}'])
-        await self.redis.delete(*to_delete)
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
 
     @_handle_redis_exceptions
     async def create_submenu(self, db_submenu: Submenu) -> None:
         menu_id, submenu_id = str(db_submenu.menu_id), str(db_submenu.id)
         all_submenus_id = MainService.get_all_submenus_id(menu_id, all_submenus_tag)
-        await self.redis.delete(all_submenus_id, menu_id, all_menus_tag, full_menu_tag)
+        to_delete = [all_submenus_id, menu_id, all_menus_tag, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.sadd(f'deps:{menu_id}', submenu_id)
         await self.redis.set(submenu_id, self._serialize_data(db_submenu), self.ttl_sec)
 
@@ -91,7 +101,8 @@ class CacheRepository:
     async def update_submenu(self, db_submenu: Submenu) -> None:
         menu_id, submenu_id = str(db_submenu.menu_id), str(db_submenu.id)
         all_submenus_id = MainService.get_all_submenus_id(menu_id, all_submenus_tag)
-        await self.redis.delete(all_submenus_id, full_menu_tag)
+        to_delete = [all_submenus_id, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.set(submenu_id, self._serialize_data(db_submenu), self.ttl_sec)
 
     @_handle_redis_exceptions
@@ -99,19 +110,27 @@ class CacheRepository:
         menu_id, submenu_id = str(menu_id), str(submenu_id)
         all_submenus_id = MainService.get_all_submenus_id(menu_id, all_submenus_tag)
         all_dishes_id = MainService.get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
-        to_delete = [menu_id, all_menus_tag, submenu_id, all_submenus_id,
-                     f'deps:{submenu_id}', all_dishes_id, full_menu_tag]
+        to_delete = [
+            menu_id,
+            all_menus_tag,
+            submenu_id,
+            all_submenus_id,
+            f'deps:{submenu_id}',
+            all_dishes_id,
+            full_menu_tag,
+        ]
         for dish_id in await self.redis.smembers(f'deps:{submenu_id}'):
             to_delete.append(dish_id)
-        await self.redis.srem(f'deps:{menu_id}', submenu_id)
-        await self.redis.delete(*to_delete)
+        self.background_tasks.add_task(self._srem_cache_keys, f'deps:{menu_id}', submenu_id)
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
 
     @_handle_redis_exceptions
     async def create_dish(self, menu_id: UUID | str, db_dish: Dish) -> None:
         menu_id, submenu_id, dish_id = str(menu_id), str(db_dish.submenu_id), str(db_dish.id)
         all_submenus_id = MainService.get_all_submenus_id(menu_id, all_submenus_tag)
         all_dishes_id = MainService.get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
-        await self.redis.delete(all_dishes_id, submenu_id, all_submenus_id, menu_id, all_menus_tag, full_menu_tag)
+        to_delete = [all_dishes_id, submenu_id, all_submenus_id, menu_id, all_menus_tag, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.sadd(f'deps:{submenu_id}', dish_id)
         await self.redis.set(dish_id, self._serialize_data(db_dish), self.ttl_sec)
 
@@ -119,7 +138,8 @@ class CacheRepository:
     async def update_dish(self, menu_id: UUID | str, db_dish: Dish) -> None:
         submenu_id, dish_id = str(db_dish.submenu_id), str(db_dish.id)
         all_dishes_id = MainService.get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
-        await self.redis.delete(all_dishes_id, full_menu_tag)
+        to_delete = [all_dishes_id, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
         await self.redis.set(dish_id, self._serialize_data(db_dish), self.ttl_sec)
 
     @_handle_redis_exceptions
@@ -127,5 +147,6 @@ class CacheRepository:
         menu_id, submenu_id, dish_id = str(menu_id), str(submenu_id), str(dish_id)
         all_dishes_id = MainService.get_all_dishes_id(menu_id, submenu_id, all_dishes_tag)
         all_submenus_id = MainService.get_all_submenus_id(menu_id, all_submenus_tag)
-        await self.redis.srem(f'deps:{submenu_id}', dish_id)
-        await self.redis.delete(dish_id, all_dishes_id, submenu_id, all_submenus_id, menu_id, all_menus_tag, full_menu_tag)
+        self.background_tasks.add_task(self._srem_cache_keys, f'deps:{submenu_id}', dish_id)
+        to_delete = [dish_id, all_dishes_id, submenu_id, all_submenus_id, menu_id, all_menus_tag, full_menu_tag]
+        self.background_tasks.add_task(self._delete_cache_keys, *to_delete)
