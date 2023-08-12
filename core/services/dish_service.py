@@ -31,7 +31,7 @@ class DishService(MainService):
         if cached_dish is not None:
             return json.loads(cached_dish)
         db_dish = await self.dish_repository.get(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
-        await self.cache_repository.set(db_dish['id'], db_dish)
+        await self.cache_repository.set(db_dish.id, db_dish)
         return db_dish
 
     async def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishInSchema) -> Dish:

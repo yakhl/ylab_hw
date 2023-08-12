@@ -33,7 +33,7 @@ class SubmenuService(MainService):
         if cached_submenu is not None:
             return json.loads(cached_submenu)
         db_submenu = await self.submenu_repository.get(menu_id=menu_id, submenu_id=submenu_id)
-        await self.cache_repository.set(db_submenu['id'], db_submenu)
+        await self.cache_repository.set(db_submenu.id, db_submenu)
         return db_submenu
 
     async def create(self, menu_id: UUID, submenu_data: SubmenuInSchema) -> Submenu:

@@ -30,7 +30,7 @@ class MenuService(MainService):
         if cached_menu is not None:
             return json.loads(cached_menu)
         db_menu = await self.menu_repository.get(id=id)
-        await self.cache_repository.set(db_menu['id'], db_menu)
+        await self.cache_repository.set(db_menu.id, db_menu)
         return db_menu
 
     async def create(self, menu_data: MenuInSchema) -> Menu:
