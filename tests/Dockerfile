@@ -9,3 +9,7 @@ RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 COPY ./tests ./tests
 
 COPY ./core ./core
+
+COPY ./migrations ./migrations
+
+COPY ./alembic.ini ./alembic.ini

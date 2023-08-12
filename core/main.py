@@ -1,11 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from .database.db import engine
-from .models import models
 from .routers import dish_router, menu_router, submenu_router
-
-models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

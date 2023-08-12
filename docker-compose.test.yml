@@ -52,7 +52,7 @@ services:
       - POSTGRES_PORT=6543
       - REDIS_HOST=redis_test
       - REDIS_PORT=6380
-    entrypoint: sh -c "pytest"
+    entrypoint: sh -c "alembic upgrade head && pytest -p no:warnings"
     networks:
       - test_network
     depends_on:

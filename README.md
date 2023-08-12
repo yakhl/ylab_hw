@@ -73,6 +73,9 @@ $ docker logs fastapi_test
 Вы увидите:
 
 ```
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 4db770efe029, initial
 ==================== test session starts ====================
 platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
 rootdir: /code
@@ -129,7 +132,7 @@ $ alembic upgrade head
 ```
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
-INFO  [alembic.runtime.migration] Running upgrade  -> 3c6dc4af3e35, initial
+INFO  [alembic.runtime.migration] Running upgrade  -> 4db770efe029, initial
 ```
 
 Запустите сервер:
@@ -149,7 +152,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 Запустите тесты:
 
 ```bash
-$ pytest
+$ pytest -p no:warnings
 ```
 
 Вы увидите:
