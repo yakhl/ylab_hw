@@ -14,7 +14,7 @@ from ..services.submenu_service import SubmenuService
 
 class TableSync:
     xlsx_path = os.path.join('core', 'admin', 'Menu.xlsx')
-    last_update_time = os.path.getmtime(xlsx_path)
+    last_update_time = 0.0
 
     def __init__(
         self, menu: MenuService = Depends(), submenu: SubmenuService = Depends(), dish: DishService = Depends()
