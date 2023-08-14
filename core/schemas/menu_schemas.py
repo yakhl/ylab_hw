@@ -9,7 +9,7 @@ class MenuBaseSchema(BaseModel):
 
 
 class MenuInSchema(MenuBaseSchema):
-    ...
+    id: UUID | None = None
 
 
 class MenuOutSchema(MenuBaseSchema):

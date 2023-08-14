@@ -52,3 +52,6 @@ class SubmenuService(MainService):
         await self.submenu_repository.delete(menu_id=menu_id, submenu_id=submenu_id)
         await self.cache_repository.delete_submenu(menu_id, submenu_id)
         return {'status': True, 'message': submenu_200_deleted_msg}
+
+    async def get_all_ids(self, menu_id: UUID) -> list[UUID]:
+        return await self.submenu_repository.get_all_ids(menu_id)

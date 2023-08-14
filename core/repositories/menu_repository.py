@@ -61,7 +61,7 @@ class MenuRepository:
             raise HTTPException(status_code=404, detail=menu_404_msg)
         query_by_title = await self._get_menu_query(title=menu_data.title)
         db_menu_by_title = query_by_title.first()
-        if db_menu_by_title and db_menu_by_title.id != id:
+        if db_menu_by_title and str(db_menu_by_title.id) != str(id):
             raise HTTPException(status_code=409, detail=menu_409_msg)
         updated_menu = await self.db.execute(
             update(Menu).where(Menu.id == id).values(menu_data.model_dump(exclude_unset=True)).returning(Menu)
@@ -76,3 +76,7 @@ class MenuRepository:
             await self.db.delete(db_menu)
             await self.db.commit()
         return
+
+    async def get_all_ids(self) -> list[UUID]:
+        query = await self.db.execute(select(Menu.id))
+        return query.scalars().all()

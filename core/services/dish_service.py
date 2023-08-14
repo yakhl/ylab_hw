@@ -50,3 +50,6 @@ class DishService(MainService):
         await self.dish_repository.delete(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
         await self.cache_repository.delete_dish(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
         return {'status': True, 'message': dish_200_deleted_msg}
+
+    async def get_all_ids(self, submenu_id: UUID) -> list[UUID]:
+        return await self.dish_repository.get_all_ids(submenu_id)

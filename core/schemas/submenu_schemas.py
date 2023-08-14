@@ -9,7 +9,7 @@ class SubmenuBaseSchema(BaseModel):
 
 
 class SubmenuInSchema(SubmenuBaseSchema):
-    ...
+    id: UUID | None = None
 
 
 class SubmenuOutSchema(SubmenuBaseSchema):

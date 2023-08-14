@@ -58,7 +58,7 @@ class DishRepository:
             raise HTTPException(status_code=404, detail=dish_404_msg)
         query_by_title = await self._get_dish_query(menu_id=menu_id, submenu_id=submenu_id, title=dish_data.title)
         db_dish_by_title = query_by_title.first()
-        if db_dish_by_title:
+        if db_dish_by_title and str(db_dish_by_title.id) != str(dish_id):
             raise HTTPException(status_code=409, detail=dish_409_msg)
         update_query = await self.db.execute(
             update(Dish).where(Dish.id == dish_id).values(dish_data.model_dump(exclude_unset=True)).returning(Dish)
@@ -78,3 +78,7 @@ class DishRepository:
             await self.db.delete(db_dish)
             await self.db.commit()
         return
+
+    async def get_all_ids(self, submenu_id: UUID) -> list[UUID]:
+        query = await self.db.execute(select(Dish.id).filter_by(submenu_id=submenu_id))
+        return query.scalars().all()

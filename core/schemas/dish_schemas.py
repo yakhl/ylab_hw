@@ -11,7 +11,7 @@ class DishBaseSchema(BaseModel):
 
 
 class DishInSchema(DishBaseSchema):
-    ...
+    id: UUID | None = None
 
 
 class DishOutSchema(DishBaseSchema):

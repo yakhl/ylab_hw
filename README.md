@@ -1,5 +1,7 @@
 # Меню ресторана
-Меню ресторана на `FastAPI` с использованием `PostgreSQL` в качестве БД и `Redis` для кеширования
+Меню ресторана на `FastAPI` с использованием `PostgreSQL` в качестве БД и `Redis` для кеширования.
+
+С помощь `Celery` и `RabbitMQ` каждые 15 секунд в БД обновляются данные в соответствии с таблицей ***Menu.xlsx***
 
 ## Запуск через `Docker`
 [Docker](https://www.docker.com/) должен быть установлен
@@ -16,11 +18,15 @@
 - **LOCAL_POSTGRES_PORT** - порт для БД на вашей машине (по-умолчанию: 5432)
 - **LOCAL_FASTAPI_PORT** - порт для API на вашей машине (по-умолчанию: 80)
 - **LOCAL_REDIS_PORT** - порт для Redis на вашей машине (по-умолчанию: 6379)
+- **LOCAL_RABBIT_PORT** - порт для RabbitMQ на вашей машине (по-умолчанию: 5672)
+- **LOCAL_RABBIT_GUI_PORT** - порт для GUI RabbitMQ на вашей машине (по-умолчанию: 15672)
 
 Внутри контейнеров установлены следующие порты:
 - **5432** - для БД
 - **80** - для API
 - **6379** - для Redis
+- **5672** - для RabbitMQ
+- **15672** - для GUI RabbitMQ
 
 Файл `.env` может выглядеть примерно так:
 
@@ -31,6 +37,7 @@ POSTGRES_PASSWORD=1234
 LOCAL_POSTGRES_PORT=6789
 LOCAL_FASTAPI_PORT=8080
 LOCAL_REDIS_PORT=6380
+LOCAL_RABBIT_PORT=5670
 ```
 
 ### Как запустить
@@ -43,13 +50,16 @@ $ docker-compose up -d
 Вы увидите:
 
 ```
-[+] Running 3/3
- ✔ Container postgres_ylab  Healthy
- ✔ Container redis_ylab     Healthy
- ✔ Container fastapi_ylab   Started
+[+] Running 6/6
+ ✔ Container postgres_ylab       Healthy
+ ✔ Container redis_ylab          Healthy
+ ✔ Container rabbitmq_ylab       Healthy
+ ✔ Container fastapi_ylab        Healthy
+ ✔ Container celery_beat_ylab    Started
+ ✔ Container celery_worker_ylab  Started
 ```
 
-Для запуска тестов с отдельными БД и Redis используйте:
+Для запуска тестов API с отдельными БД и Redis используйте:
 
 ```bash
 $ docker-compose -f docker-compose.test.yml up -d
@@ -92,12 +102,13 @@ tests/test_submenus.py ............                    [100%]
 
 ## Запуск `локально`
 Используйте виртуальное окружение и [Python3.10+](https://www.python.org/downloads/)
+Для работы Celery должен быть запущен [RabbitMQ](https://www.rabbitmq.com/)
 
 ### Зависимости
 Установите зависимости:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt -r celery_app/celery_requirements.txt
 ```
 
 ### Переменные окружения
@@ -111,6 +122,10 @@ pip install -r requirements.txt
 - **POSTGRES_PORT** - порт БД (по-умолчанию: 5432)
 - **REDIS_HOST** - хост Redis (по-умолчанию: localhost)
 - **REDIS_PORT** - порт Redis (по-умолчанию: 6379)
+- **FASTAPI_HOST** - хост API для Celery (по-умолчанию: localhost)
+- **FASTAPI_PORT** - порт API для Celery (по-умолчанию: 8000)
+- **RABBIT_HOST** - хост RabbitMQ для Celery (по-умолчанию: localhost)
+- **RABBIT_PORT** - порт RabbitMQ для Celery (по-умолчанию: 5672)
 
 Файл `.env` может выглядеть примерно так:
 
@@ -168,4 +183,36 @@ tests/test_full_menu.py .......                        [ 50%]
 tests/test_menus.py .........                          [ 71%]
 tests/test_submenus.py ............                    [100%]
 ==================== 46 passed in 1.78s =====================
+```
+
+Запустите Celery worker:
+
+```bash
+celery -A celery_app.tasks worker --loglevel=INFO --pool=solo
+```
+
+Вы увидите:
+```
+...
+mingle: searching for neighbors
+mingle: all alone
+celery@PC ready.
+...
+Task celery_app.tasks.sync_table[...] succeeded in 2.0s
+...
+```
+
+Запустите Celery beat:
+
+```bash
+celery -A celery_app.tasks beat --loglevel=INFO
+```
+
+Вы увидите:
+```
+celery beat v5.3.1 (emerald-rush) is starting.
+...
+beat: Starting...
+Scheduler: Sending due task sync-table-every-15-seconds (celery_app.tasks.sync_table)
+...
 ```

@@ -47,3 +47,6 @@ class MenuService(MainService):
         await self.menu_repository.delete(id=id)
         await self.cache_repository.delete_menu(menu_id=id)
         return {'status': True, 'message': menu_200_deleted_msg}
+
+    async def get_all_ids(self) -> list[UUID]:
+        return await self.menu_repository.get_all_ids()

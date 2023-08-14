@@ -63,6 +63,71 @@ services:
         condition: service_healthy
       redis_ylab:
         condition: service_healthy
+    healthcheck:
+      test: curl localhost:80/api/v1/menus || exit 1
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
+
+  rabbitmq_ylab:
+    container_name: rabbitmq_ylab
+    image: rabbitmq:3.12-alpine
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "${LOCAL_RABBIT_PORT:-5672}:5672"
+      - "${LOCAL_RABBIT_GUI_PORT:-15672}:15672"
+    networks:
+      - ylab_network
+    healthcheck:
+      test: sh -c "rabbitmq-diagnostics -q ping"
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
+
+  celery_worker_ylab:
+    container_name: celery_worker_ylab
+    build:
+      context: .
+      dockerfile: ./celery_app/Dockerfile
+    environment:
+      - FASTAPI_HOST=fastapi_ylab
+      - FASTAPI_PORT=80
+      - RABBIT_HOST=rabbitmq_ylab
+      - RABBIT_PORT=5672
+    entrypoint: sh -c "celery -A celery_app.tasks worker --loglevel=INFO"
+    volumes:
+      - celery_worker_data:/data
+    networks:
+      - ylab_network
+    depends_on:
+      fastapi_ylab:
+        condition: service_healthy
+      rabbitmq_ylab:
+        condition: service_healthy
+
+  celery_beat_ylab:
+    container_name: celery_beat_ylab
+    build:
+      context: .
+      dockerfile: ./celery_app/Dockerfile
+    environment:
+      - FASTAPI_HOST=fastapi_ylab
+      - FASTAPI_PORT=80
+      - RABBIT_HOST=rabbitmq_ylab
+      - RABBIT_PORT=5672
+    entrypoint: sh -c "celery -A celery_app.tasks beat --loglevel=INFO"
+    volumes:
+      - celery_beat_data:/data
+    networks:
+      - ylab_network
+    depends_on:
+      fastapi_ylab:
+        condition: service_healthy
+      rabbitmq_ylab:
+        condition: service_healthy
 
 networks:
   ylab_network:
@@ -72,3 +137,6 @@ volumes:
   postgres_data:
   shared-volume:
   redis_data:
+  rabbitmq_data:
+  celery_worker_data:
+  celery_beat_data:

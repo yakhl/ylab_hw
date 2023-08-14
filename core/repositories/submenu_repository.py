@@ -64,7 +64,7 @@ class SubmenuRepository:
             raise HTTPException(status_code=404, detail=submenu_404_msg)
         query_by_title = await self._get_submenu_query(menu_id=menu_id, title=submenu_data.title)
         db_submenu_by_title = query_by_title.first()
-        if db_submenu_by_title and db_submenu_by_title.id != submenu_id:
+        if db_submenu_by_title and str(db_submenu_by_title.id) != str(submenu_id):
             raise HTTPException(status_code=409, detail=submenu_409_msg)
         updated_submenu = await self.db.execute(
             update(Submenu)
@@ -82,3 +82,7 @@ class SubmenuRepository:
             await self.db.delete(db_submenu)
             await self.db.commit()
         return
+
+    async def get_all_ids(self, menu_id: UUID) -> list[UUID]:
+        query = await self.db.execute(select(Submenu.id).filter_by(menu_id=menu_id))
+        return query.scalars().all()
