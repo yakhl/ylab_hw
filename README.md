@@ -1,3 +1,10 @@
+##### ***Задания со звездочкой:***
+
+- ###### ***Тесты для проверки количества блюд и подменю – [test_counters.py](https://github.com/yakhl/ylab_hw/blob/main/tests/menu_repository.py)***
+
+- ###### ***Подсчет количества подменю и блюд для меню через один ORM запрос – [menu_repository.py #L20](https://github.com/yakhl/ylab_hw/blob/main/core/repositories/crud/menu_repository.py#L20)***
+___
+
 # Меню ресторана
 Меню ресторана на `FastAPI` с использованием `PostgreSQL` в качестве БД и `Redis` для кеширования.
 

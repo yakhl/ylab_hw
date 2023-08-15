@@ -36,3 +36,13 @@ class DishValueStorage:
     title: None | str = None
     description: None | str = None
     price: float = 0
+
+    id1: None | str = None
+    title1: None | str = None
+    description1: None | str = None
+    price1: float = 0
+
+    id2: None | str = None
+    title2: None | str = None
+    description2: None | str = None
+    price2: float = 0
