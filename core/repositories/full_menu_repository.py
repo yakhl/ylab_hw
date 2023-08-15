@@ -6,9 +6,10 @@ from sqlalchemy.orm import selectinload
 from ..database.db import get_db
 from ..models.models import Menu, Submenu
 from ..schemas.full_menu_schema import Menu as MenuSchema
+from .crud_repository import CrudRepository
 
 
-class FullMenuRepository:
+class FullMenuRepository(CrudRepository):
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
 
