@@ -1,13 +1,13 @@
 from fastapi import Depends
 
-from core.repositories.cache_repository import CacheRepository
-from core.repositories.full_menu_repository import FullMenuRepository
+from core.repositories.cache.full_menu_repository import FullMenuCacheRepository
+from core.repositories.crud.full_menu_repository import FullMenuRepository
 from core.schemas.full_menu_schema import Menu
 
 
 class FullMenuService:
     def __init__(
-        self, cache_repository: CacheRepository = Depends(), full_menu_repository: FullMenuRepository = Depends()
+        self, cache_repository: FullMenuCacheRepository = Depends(), full_menu_repository: FullMenuRepository = Depends()
     ):
         self.full_menu_repository = full_menu_repository
         self.cache_repository = cache_repository

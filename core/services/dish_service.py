@@ -3,13 +3,13 @@ from uuid import UUID
 from fastapi import Depends
 
 from core.models.models import Dish
-from core.repositories.cache_repository import CacheRepository
-from core.repositories.dish_repository import DishRepository
+from core.repositories.cache.dish_repository import DishCacheRepository
+from core.repositories.crud.dish_repository import DishRepository
 from core.schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 
 
 class DishService:
-    def __init__(self, cache_repository: CacheRepository = Depends(), dish_repository: DishRepository = Depends()):
+    def __init__(self, cache_repository: DishCacheRepository = Depends(), dish_repository: DishRepository = Depends()):
         self.dish_repository = dish_repository
         self.cache_repository = cache_repository
 

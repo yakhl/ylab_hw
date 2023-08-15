@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from core.database.db import get_db
 from core.models.models import Menu, Submenu
-from core.repositories.crud_repository import CrudRepository
+from core.repositories.crud.crud_repository import CrudRepository
 from core.schemas.full_menu_schema import Menu as MenuSchema
 
 

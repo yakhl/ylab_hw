@@ -3,13 +3,13 @@ from uuid import UUID
 from fastapi import Depends
 
 from core.models.models import Menu
-from core.repositories.cache_repository import CacheRepository
-from core.repositories.menu_repository import MenuRepository
+from core.repositories.cache.menu_repository import MenuCacheRepository
+from core.repositories.crud.menu_repository import MenuRepository
 from core.schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
 
 
 class MenuService:
-    def __init__(self, cache_repository: CacheRepository = Depends(), menu_repository: MenuRepository = Depends()):
+    def __init__(self, cache_repository: MenuCacheRepository = Depends(), menu_repository: MenuRepository = Depends()):
         self.menu_repository = menu_repository
         self.cache_repository = cache_repository
 

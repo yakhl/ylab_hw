@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database.db import get_db
 from core.models.models import Dish, Submenu
-from core.repositories.crud_repository import CrudRepository
-from core.repositories.submenu_repository import SubmenuRepository
+from core.repositories.crud.crud_repository import CrudRepository
+from core.repositories.crud.submenu_repository import SubmenuRepository
 from core.schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 
 

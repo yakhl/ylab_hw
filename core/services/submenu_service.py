@@ -3,14 +3,14 @@ from uuid import UUID
 from fastapi import Depends
 
 from core.models.models import Submenu
-from core.repositories.cache_repository import CacheRepository
-from core.repositories.submenu_repository import SubmenuRepository
+from core.repositories.cache.submenu_repository import SubmenuCacheRepository
+from core.repositories.crud.submenu_repository import SubmenuRepository
 from core.schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
 
 
 class SubmenuService:
     def __init__(
-        self, cache_repository: CacheRepository = Depends(), submenu_repository: SubmenuRepository = Depends()
+        self, cache_repository: SubmenuCacheRepository = Depends(), submenu_repository: SubmenuRepository = Depends()
     ):
         self.submenu_repository = submenu_repository
         self.cache_repository = cache_repository
