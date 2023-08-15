@@ -8,7 +8,7 @@ from ..configs.error_messages import submenu_200_deleted_msg
 from ..models.models import Submenu
 from ..repositories.cache_repository import CacheRepository
 from ..repositories.submenu_repository import SubmenuRepository
-from ..schemas.submenu_schemas import SubmenuInSchema
+from ..schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
 from .main_service import MainService
 
 
@@ -36,12 +36,12 @@ class SubmenuService(MainService):
         await self.cache_repository.set(db_submenu.id, db_submenu)
         return db_submenu
 
-    async def create(self, menu_id: UUID, submenu_data: SubmenuInSchema) -> Submenu:
+    async def create(self, menu_id: UUID, submenu_data: SubmenuCreateSchema) -> Submenu:
         db_submenu = await self.submenu_repository.create(menu_id=menu_id, submenu_data=submenu_data)
         await self.cache_repository.create_submenu(db_submenu=db_submenu)
         return db_submenu
 
-    async def update(self, menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuInSchema) -> Submenu:
+    async def update(self, menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuUpdateSchema) -> Submenu:
         db_submenu = await self.submenu_repository.update(
             menu_id=menu_id, submenu_id=submenu_id, submenu_data=submenu_data
         )

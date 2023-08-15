@@ -10,8 +10,12 @@ class DishBaseSchema(BaseModel):
     price: Decimal
 
 
-class DishInSchema(DishBaseSchema):
+class DishCreateSchema(DishBaseSchema):
     id: UUID | None = None
+
+
+class DishUpdateSchema(DishBaseSchema):
+    ...
 
 
 class DishOutSchema(DishBaseSchema):

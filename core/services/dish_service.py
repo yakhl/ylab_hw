@@ -8,7 +8,7 @@ from ..configs.error_messages import dish_200_deleted_msg
 from ..models.models import Dish
 from ..repositories.cache_repository import CacheRepository
 from ..repositories.dish_repository import DishRepository
-from ..schemas.dish_schemas import DishInSchema
+from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 from .main_service import MainService
 
 
@@ -34,12 +34,12 @@ class DishService(MainService):
         await self.cache_repository.set(db_dish.id, db_dish)
         return db_dish
 
-    async def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishInSchema) -> Dish:
+    async def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishCreateSchema) -> Dish:
         db_dish = await self.dish_repository.create(menu_id=menu_id, submenu_id=submenu_id, dish_data=dish_data)
         await self.cache_repository.create_dish(menu_id, db_dish)
         return db_dish
 
-    async def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishInSchema) -> Dish:
+    async def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishUpdateSchema) -> Dish:
         db_dish = await self.dish_repository.update(
             menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, dish_data=dish_data
         )

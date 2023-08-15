@@ -5,10 +5,10 @@ from sqlalchemy import distinct, func, select, update
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..configs.error_messages import menu_404_msg, menu_409_msg
+from ..configs.error_messages import menu_404_msg, menu_409_id_msg, menu_409_title_msg
 from ..database.db import get_db
 from ..models.models import Dish, Menu, Submenu
-from ..schemas.menu_schemas import MenuInSchema
+from ..schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
 
 
 class MenuRepository:
@@ -43,18 +43,21 @@ class MenuRepository:
             raise HTTPException(status_code=404, detail=menu_404_msg)
         return db_menu
 
-    async def create(self, menu_data: MenuInSchema) -> Menu:
+    async def create(self, menu_data: MenuCreateSchema) -> Menu:
+        query_by_id = await self.db.execute(select(Menu.id).filter_by(id=menu_data.id))
+        if query_by_id.first():
+            raise HTTPException(status_code=409, detail=menu_409_id_msg)
         query = await self._get_menu_query(title=menu_data.title)
         db_menu_by_title = query.first()
         if db_menu_by_title:
-            raise HTTPException(status_code=409, detail=menu_409_msg)
+            raise HTTPException(status_code=409, detail=menu_409_title_msg)
         db_menu = Menu(**menu_data.model_dump())
         self.db.add(db_menu)
         await self.db.commit()
         await self.db.refresh(db_menu)
         return db_menu
 
-    async def update(self, id: UUID, menu_data: MenuInSchema) -> Menu:
+    async def update(self, id: UUID, menu_data: MenuUpdateSchema) -> Menu:
         query = await self._get_menu_query(id=id)
         db_menu = query.first()
         if db_menu is None:
@@ -62,7 +65,7 @@ class MenuRepository:
         query_by_title = await self._get_menu_query(title=menu_data.title)
         db_menu_by_title = query_by_title.first()
         if db_menu_by_title and str(db_menu_by_title.id) != str(id):
-            raise HTTPException(status_code=409, detail=menu_409_msg)
+            raise HTTPException(status_code=409, detail=menu_409_title_msg)
         updated_menu = await self.db.execute(
             update(Menu).where(Menu.id == id).values(menu_data.model_dump(exclude_unset=True)).returning(Menu)
         )

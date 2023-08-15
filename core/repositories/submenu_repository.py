@@ -5,10 +5,15 @@ from sqlalchemy import distinct, func, select, update
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..configs.error_messages import menu_404_msg, submenu_404_msg, submenu_409_msg
+from ..configs.error_messages import (
+    menu_404_msg,
+    submenu_404_msg,
+    submenu_409_id_msg,
+    submenu_409_title_msg,
+)
 from ..database.db import get_db
 from ..models.models import Dish, Submenu
-from ..schemas.submenu_schemas import SubmenuInSchema
+from ..schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
 from .menu_repository import MenuRepository
 
 
@@ -44,20 +49,23 @@ class SubmenuRepository:
             raise HTTPException(status_code=404, detail=submenu_404_msg)
         return db_submenu
 
-    async def create(self, menu_id: UUID, submenu_data: SubmenuInSchema) -> Submenu:
+    async def create(self, menu_id: UUID, submenu_data: SubmenuCreateSchema) -> Submenu:
         menu_query = await self.menu_repo._get_menu_query(id=menu_id)
         if menu_query.first() is None:
             raise HTTPException(status_code=404, detail=menu_404_msg)
+        query_by_id = await self.db.execute(select(Submenu.id,).filter_by(id=submenu_data.id))
+        if query_by_id.first():
+            raise HTTPException(status_code=409, detail=submenu_409_id_msg)
         query_by_title = await self._get_submenu_query(menu_id=menu_id, title=submenu_data.title)
         if query_by_title.first():
-            raise HTTPException(status_code=409, detail=submenu_409_msg)
+            raise HTTPException(status_code=409, detail=submenu_409_title_msg)
         db_submenu = Submenu(menu_id=menu_id, **submenu_data.model_dump())
         self.db.add(db_submenu)
         await self.db.commit()
         await self.db.refresh(db_submenu)
         return db_submenu
 
-    async def update(self, menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuInSchema) -> Submenu:
+    async def update(self, menu_id: UUID, submenu_id: UUID, submenu_data: SubmenuUpdateSchema) -> Submenu:
         query = await self._get_submenu_query(menu_id=menu_id, id=submenu_id)
         db_submenu = query.first()
         if db_submenu is None:
@@ -65,7 +73,7 @@ class SubmenuRepository:
         query_by_title = await self._get_submenu_query(menu_id=menu_id, title=submenu_data.title)
         db_submenu_by_title = query_by_title.first()
         if db_submenu_by_title and str(db_submenu_by_title.id) != str(submenu_id):
-            raise HTTPException(status_code=409, detail=submenu_409_msg)
+            raise HTTPException(status_code=409, detail=submenu_409_title_msg)
         updated_submenu = await self.db.execute(
             update(Submenu)
             .where(Submenu.id == submenu_id)

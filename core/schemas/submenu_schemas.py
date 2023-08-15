@@ -8,8 +8,12 @@ class SubmenuBaseSchema(BaseModel):
     description: str
 
 
-class SubmenuInSchema(SubmenuBaseSchema):
+class SubmenuCreateSchema(SubmenuBaseSchema):
     id: UUID | None = None
+
+
+class SubmenuUpdateSchema(SubmenuBaseSchema):
+    ...
 
 
 class SubmenuOutSchema(SubmenuBaseSchema):

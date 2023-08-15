@@ -8,8 +8,12 @@ class MenuBaseSchema(BaseModel):
     description: str
 
 
-class MenuInSchema(MenuBaseSchema):
+class MenuCreateSchema(MenuBaseSchema):
     id: UUID | None = None
+
+
+class MenuUpdateSchema(MenuBaseSchema):
+    ...
 
 
 class MenuOutSchema(MenuBaseSchema):

@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from ..models.models import Menu
-from ..schemas.menu_schemas import MenuInSchema, MenuOutSchema
+from ..schemas.menu_schemas import MenuCreateSchema, MenuOutSchema, MenuUpdateSchema
 from ..services.menu_service import MenuService
 
 router = APIRouter(prefix='/menus')
@@ -20,12 +20,12 @@ async def get_menu(menu_id: UUID, menu: MenuService = Depends()) -> Menu:
 
 
 @router.post('', response_model=MenuOutSchema, status_code=201)
-async def create_menu(menu_data: MenuInSchema, menu: MenuService = Depends()) -> Menu:
+async def create_menu(menu_data: MenuCreateSchema, menu: MenuService = Depends()) -> Menu:
     return await menu.create(menu_data=menu_data)
 
 
 @router.patch('/{menu_id}', response_model=MenuOutSchema)
-async def update_menu(menu_id: UUID, menu_data: MenuInSchema, menu: MenuService = Depends()) -> Menu:
+async def update_menu(menu_id: UUID, menu_data: MenuUpdateSchema, menu: MenuService = Depends()) -> Menu:
     return await menu.update(id=menu_id, menu_data=menu_data)
 
 

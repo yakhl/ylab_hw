@@ -5,10 +5,15 @@ from sqlalchemy import select, update
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..configs.error_messages import dish_404_msg, dish_409_msg, submenu_404_msg
+from ..configs.error_messages import (
+    dish_404_msg,
+    dish_409_id_msg,
+    dish_409_title_msg,
+    submenu_404_msg,
+)
 from ..database.db import get_db
 from ..models.models import Dish, Submenu
-from ..schemas.dish_schemas import DishInSchema
+from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 from .submenu_repository import SubmenuRepository
 
 
@@ -37,21 +42,25 @@ class DishRepository:
             raise HTTPException(status_code=404, detail=dish_404_msg)
         return db_dish
 
-    async def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishInSchema) -> Dish:
+    async def create(self, menu_id: UUID, submenu_id: UUID, dish_data: DishCreateSchema) -> Dish:
         db_submenu = await self.submenu_repo._get_submenu_query(menu_id=menu_id, id=submenu_id)
         if db_submenu is None:
             raise HTTPException(status_code=404, detail=submenu_404_msg)
+        dish_query_by_id = await self.db.execute(select(Dish.id).filter_by(id=dish_data.id))
+        db_dish_by_id = dish_query_by_id.first()
+        if db_dish_by_id:
+            raise HTTPException(status_code=409, detail=dish_409_id_msg)
         query = await self._get_dish_query(menu_id=menu_id, submenu_id=submenu_id, title=dish_data.title)
         db_dish_by_title = query.first()
         if db_dish_by_title:
-            raise HTTPException(status_code=409, detail=dish_409_msg)
+            raise HTTPException(status_code=409, detail=dish_409_title_msg)
         db_dish = Dish(submenu_id=submenu_id, **dish_data.model_dump())
         self.db.add(db_dish)
         await self.db.commit()
         await self.db.refresh(db_dish)
         return db_dish
 
-    async def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishInSchema) -> Dish:
+    async def update(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_data: DishUpdateSchema) -> Dish:
         query = await self._get_dish_query(menu_id=menu_id, submenu_id=submenu_id, id=dish_id)
         db_dish = query.first()
         if db_dish is None:
@@ -59,7 +68,7 @@ class DishRepository:
         query_by_title = await self._get_dish_query(menu_id=menu_id, submenu_id=submenu_id, title=dish_data.title)
         db_dish_by_title = query_by_title.first()
         if db_dish_by_title and str(db_dish_by_title.id) != str(dish_id):
-            raise HTTPException(status_code=409, detail=dish_409_msg)
+            raise HTTPException(status_code=409, detail=dish_409_title_msg)
         update_query = await self.db.execute(
             update(Dish).where(Dish.id == dish_id).values(dish_data.model_dump(exclude_unset=True)).returning(Dish)
         )

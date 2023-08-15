@@ -4,9 +4,9 @@ from uuid import UUID
 import pandas as pd
 from fastapi import Depends, HTTPException
 
-from ..schemas.dish_schemas import DishInSchema
-from ..schemas.menu_schemas import MenuInSchema
-from ..schemas.submenu_schemas import SubmenuInSchema
+from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
+from ..schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
+from ..schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
 from ..services.dish_service import DishService
 from ..services.menu_service import MenuService
 from ..services.submenu_service import SubmenuService
@@ -63,10 +63,10 @@ class TableSync:
                 table_menus_ids.add(menu_id)
                 menu_data = {'title': menu_title, 'description': menu_description}
                 try:
-                    await self.menu.update(menu_id, MenuInSchema(**menu_data))
+                    await self.menu.update(menu_id, MenuUpdateSchema(**menu_data))
                 except HTTPException as exc:
                     if exc.status_code == 404:
-                        await self.menu.create(MenuInSchema(id=menu_id, **menu_data))
+                        await self.menu.create(MenuCreateSchema(id=menu_id, **menu_data))
                     else:
                         raise
                 continue
@@ -78,10 +78,10 @@ class TableSync:
                 table_submenus_ids.add(submenu_id)
                 submenu_data = {'title': submenu_title, 'description': submenu_description}
                 try:
-                    await self.submenu.update(menu_id, submenu_id, SubmenuInSchema(**submenu_data))
+                    await self.submenu.update(menu_id, submenu_id, SubmenuUpdateSchema(**submenu_data))
                 except HTTPException as exc:
                     if exc.status_code == 404:
-                        await self.submenu.create(menu_id, SubmenuInSchema(id=submenu_id, **submenu_data))
+                        await self.submenu.create(menu_id, SubmenuCreateSchema(id=submenu_id, **submenu_data))
                     else:
                         raise
                 continue
@@ -92,10 +92,10 @@ class TableSync:
                 table_dishes_ids.add(dish_id)
                 dish_data = {'title': dish_title, 'description': dish_description, 'price': dish_price}
                 try:
-                    await self.dish.update(menu_id, submenu_id, dish_id, DishInSchema(**dish_data))
+                    await self.dish.update(menu_id, submenu_id, dish_id, DishUpdateSchema(**dish_data))
                 except HTTPException as exc:
                     if exc.status_code == 404:
-                        await self.dish.create(menu_id, submenu_id, DishInSchema(id=dish_id, **dish_data))
+                        await self.dish.create(menu_id, submenu_id, DishCreateSchema(id=dish_id, **dish_data))
                     else:
                         raise
                 continue
