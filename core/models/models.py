@@ -4,7 +4,7 @@ from sqlalchemy import DECIMAL, Column, ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from ..database.db import Base
+from core.database.db import Base
 
 
 class Menu(Base):

@@ -1,8 +1,8 @@
 from fastapi import Depends
 
-from ..repositories.cache_repository import CacheRepository
-from ..repositories.full_menu_repository import FullMenuRepository
-from ..schemas.full_menu_schema import Menu
+from core.repositories.cache_repository import CacheRepository
+from core.repositories.full_menu_repository import FullMenuRepository
+from core.schemas.full_menu_schema import Menu
 
 
 class FullMenuService:

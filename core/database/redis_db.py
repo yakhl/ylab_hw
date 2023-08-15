@@ -1,6 +1,6 @@
 from redis import asyncio as aioredis
 
-from ..configs.env_var import REDIS_HOST, REDIS_PORT
+from core.configs.env_var import REDIS_HOST, REDIS_PORT
 
 pool = aioredis.ConnectionPool(
     host=REDIS_HOST,

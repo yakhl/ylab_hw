@@ -5,10 +5,10 @@ from sqlalchemy import distinct, func, select, update
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..database.db import get_db
-from ..models.models import Dish, Menu, Submenu
-from ..schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
-from .crud_repository import CrudRepository
+from core.database.db import get_db
+from core.models.models import Dish, Menu, Submenu
+from core.repositories.crud_repository import CrudRepository
+from core.schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
 
 
 class MenuRepository(CrudRepository):

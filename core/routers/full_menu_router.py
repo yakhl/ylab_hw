@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from ..schemas.full_menu_schema import Menu
-from ..services.full_menu_service import FullMenuService
+from core.schemas.full_menu_schema import Menu
+from core.services.full_menu_service import FullMenuService
 
 router = APIRouter(prefix='/full_menu')
 

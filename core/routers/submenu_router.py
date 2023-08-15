@@ -2,13 +2,13 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from ..models.models import Submenu
-from ..schemas.submenu_schemas import (
+from core.models.models import Submenu
+from core.schemas.submenu_schemas import (
     SubmenuCreateSchema,
     SubmenuOutSchema,
     SubmenuUpdateSchema,
 )
-from ..services.submenu_service import SubmenuService
+from core.services.submenu_service import SubmenuService
 
 router = APIRouter(prefix='/submenus')
 

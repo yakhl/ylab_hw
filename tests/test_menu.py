@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
-from .conftest import MenuValueStorage
+from tests.conftest import MenuValueStorage
 
 
 class TestMenu:

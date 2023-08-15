@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from ..tasks.table import TableSync
+from core.tasks.table import TableSync
 
 router = APIRouter(prefix='/admin')
 

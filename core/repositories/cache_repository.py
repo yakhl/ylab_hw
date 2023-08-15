@@ -6,9 +6,9 @@ from fastapi import BackgroundTasks, Depends
 from fastapi.encoders import jsonable_encoder
 from redis import asyncio as aioredis
 
-from ..database.redis_db import get_redis
-from ..models.models import Base, Dish, Menu, Submenu
-from ..schemas.full_menu_schema import Menu as MenuSchema
+from core.database.redis_db import get_redis
+from core.models.models import Base, Dish, Menu, Submenu
+from core.schemas.full_menu_schema import Menu as MenuSchema
 
 
 class CacheRepository:

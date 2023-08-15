@@ -2,10 +2,10 @@ from uuid import UUID
 
 from fastapi import Depends
 
-from ..models.models import Menu
-from ..repositories.cache_repository import CacheRepository
-from ..repositories.menu_repository import MenuRepository
-from ..schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
+from core.models.models import Menu
+from core.repositories.cache_repository import CacheRepository
+from core.repositories.menu_repository import MenuRepository
+from core.schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
 
 
 class MenuService:

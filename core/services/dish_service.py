@@ -2,10 +2,10 @@ from uuid import UUID
 
 from fastapi import Depends
 
-from ..models.models import Dish
-from ..repositories.cache_repository import CacheRepository
-from ..repositories.dish_repository import DishRepository
-from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
+from core.models.models import Dish
+from core.repositories.cache_repository import CacheRepository
+from core.repositories.dish_repository import DishRepository
+from core.schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 
 
 class DishService:

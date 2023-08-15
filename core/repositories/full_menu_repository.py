@@ -3,10 +3,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..database.db import get_db
-from ..models.models import Menu, Submenu
-from ..schemas.full_menu_schema import Menu as MenuSchema
-from .crud_repository import CrudRepository
+from core.database.db import get_db
+from core.models.models import Menu, Submenu
+from core.repositories.crud_repository import CrudRepository
+from core.schemas.full_menu_schema import Menu as MenuSchema
 
 
 class FullMenuRepository(CrudRepository):

@@ -2,9 +2,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from ..models.models import Menu
-from ..schemas.menu_schemas import MenuCreateSchema, MenuOutSchema, MenuUpdateSchema
-from ..services.menu_service import MenuService
+from core.models.models import Menu
+from core.schemas.menu_schemas import MenuCreateSchema, MenuOutSchema, MenuUpdateSchema
+from core.services.menu_service import MenuService
 
 router = APIRouter(prefix='/menus')
 

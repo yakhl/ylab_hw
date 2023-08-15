@@ -2,10 +2,10 @@ from uuid import UUID
 
 from fastapi import Depends
 
-from ..models.models import Submenu
-from ..repositories.cache_repository import CacheRepository
-from ..repositories.submenu_repository import SubmenuRepository
-from ..schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
+from core.models.models import Submenu
+from core.repositories.cache_repository import CacheRepository
+from core.repositories.submenu_repository import SubmenuRepository
+from core.schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
 
 
 class SubmenuService:

@@ -4,12 +4,12 @@ from uuid import UUID
 import pandas as pd
 from fastapi import Depends, HTTPException
 
-from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
-from ..schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
-from ..schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
-from ..services.dish_service import DishService
-from ..services.menu_service import MenuService
-from ..services.submenu_service import SubmenuService
+from core.schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
+from core.schemas.menu_schemas import MenuCreateSchema, MenuUpdateSchema
+from core.schemas.submenu_schemas import SubmenuCreateSchema, SubmenuUpdateSchema
+from core.services.dish_service import DishService
+from core.services.menu_service import MenuService
+from core.services.submenu_service import SubmenuService
 
 
 class TableSync:

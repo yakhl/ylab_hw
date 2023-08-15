@@ -5,11 +5,11 @@ from sqlalchemy import select, update
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..database.db import get_db
-from ..models.models import Dish, Submenu
-from ..schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
-from .crud_repository import CrudRepository
-from .submenu_repository import SubmenuRepository
+from core.database.db import get_db
+from core.models.models import Dish, Submenu
+from core.repositories.crud_repository import CrudRepository
+from core.repositories.submenu_repository import SubmenuRepository
+from core.schemas.dish_schemas import DishCreateSchema, DishUpdateSchema
 
 
 class DishRepository(CrudRepository):

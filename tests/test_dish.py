@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient
 
-from .conftest import DishValueStorage, MenuValueStorage, SubmenuValueStorage
+from tests.conftest import DishValueStorage, MenuValueStorage, SubmenuValueStorage
 
 
 class TestDish:

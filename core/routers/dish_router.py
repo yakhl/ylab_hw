@@ -2,9 +2,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from ..models.models import Dish
-from ..schemas.dish_schemas import DishCreateSchema, DishOutSchema, DishUpdateSchema
-from ..services.dish_service import DishService
+from core.models.models import Dish
+from core.schemas.dish_schemas import DishCreateSchema, DishOutSchema, DishUpdateSchema
+from core.services.dish_service import DishService
 
 router = APIRouter(prefix='/dishes')
 

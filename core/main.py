@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from .routers import (
+from core.routers import (
     admin_router,
     dish_router,
     full_menu_router,
