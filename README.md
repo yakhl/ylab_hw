@@ -3,6 +3,8 @@
 - ###### ***Тесты для проверки количества блюд и подменю – [test_counters.py](https://github.com/yakhl/ylab_hw/blob/main/tests/test_counters.py)***
 
 - ###### ***Подсчет количества подменю и блюд для меню через один ORM запрос – [menu_repository.py #L20](https://github.com/yakhl/ylab_hw/blob/main/core/repositories/crud/menu_repository.py#L20)***
+
+- ###### ***Описать ручки API в соответствий c OpenAPI – [routers](https://github.com/yakhl/ylab_hw/tree/main/core/routers)***
 ___
 
 # Меню ресторана
@@ -98,13 +100,14 @@ platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
 rootdir: /code
 plugins: anyio-3.7.1, asyncio-0.21.1
 asyncio: mode=strict
-collected 46 items
+collected 58 items
 
-tests/test_dishes.py ...............                   [ 34%]
-tests/test_full_menu.py .......                        [ 50%]
-tests/test_menus.py .........                          [ 71%]
+tests/test_counters.py ............                    [ 20%]
+tests/test_dishes.py ...............                   [ 48%]
+tests/test_full_menu.py .......                        [ 60%]
+tests/test_menus.py .........                          [ 77%]
 tests/test_submenus.py ............                    [100%]
-==================== 46 passed in 1.78s =====================
+==================== 58 passed in 1.78s =====================
 ```
 
 ## Запуск `локально`
@@ -183,13 +186,14 @@ platform linux -- Python 3.10.12, pytest-7.4.0, pluggy-1.2.0
 rootdir: /code
 plugins: anyio-3.7.1, asyncio-0.21.1
 asyncio: mode=strict
-collected 46 items
+collected 58 items
 
-tests/test_dishes.py ...............                   [ 34%]
-tests/test_full_menu.py .......                        [ 50%]
-tests/test_menus.py .........                          [ 71%]
+tests/test_counters.py ............                    [ 20%]
+tests/test_dishes.py ...............                   [ 48%]
+tests/test_full_menu.py .......                        [ 60%]
+tests/test_menus.py .........                          [ 77%]
 tests/test_submenus.py ............                    [100%]
-==================== 46 passed in 1.78s =====================
+==================== 58 passed in 1.78s =====================
 ```
 
 Запустите Celery worker:

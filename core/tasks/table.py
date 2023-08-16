@@ -42,10 +42,10 @@ class TableSync:
         for menu_id_to_delete in menus_ids_to_delete:
             await self.menu.delete(menu_id_to_delete)
 
-    async def sync_table(self) -> None:
+    async def sync_table(self) -> dict:
         current_update_time = os.path.getmtime(self.xlsx_path)
         if TableSync.last_update_time == current_update_time:
-            return
+            return {'status': False, 'message': 'no need to sync'}
         TableSync.last_update_time = current_update_time
         table_menus_ids: set[UUID] = set()
         table_submenus_ids: set[UUID] = set()
@@ -103,3 +103,4 @@ class TableSync:
         await self._delete_menus(table_menus_ids)
         await self._delete_submenus(menu_id, table_submenus_ids)
         await self._delete_dishes(menu_id, submenu_id, table_dishes_ids)
+        return {'status': True, 'message': 'success'}

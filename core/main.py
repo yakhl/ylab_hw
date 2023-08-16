@@ -11,10 +11,10 @@ from core.routers import (
 
 app = FastAPI()
 
+app.include_router(full_menu_router.router, prefix='/api/v1')
 app.include_router(menu_router.router, prefix='/api/v1')
 app.include_router(submenu_router.router, prefix='/api/v1/menus/{menu_id}')
 app.include_router(dish_router.router, prefix='/api/v1/menus/{menu_id}/submenus/{submenu_id}')
-app.include_router(full_menu_router.router, prefix='/api/v1')
 app.include_router(admin_router.router, prefix='/api/v1')
 
 
